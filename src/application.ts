@@ -1,32 +1,9 @@
-import { datetime, log } from "../deps.ts";
+import { log } from "../deps.ts";
 import Config from "./contracts/config.ts";
 import DatabaseProvider from "./providers/database.provider.ts";
 import Database from "./contracts/database.ts";
 import ServerProvider from "./providers/server.provider.ts";
 import Server from "./contracts/server.ts";
-
-await log.setup({
-  handlers: {
-    console: new log.handlers.ConsoleHandler("DEBUG"),
-    // file: new log.handlers.FileHandler("WARNING", {
-    //   filename: `./logs/${datetime.format(new Date(), "yyyyMMdd")}.log`,
-    //   formatter: "{levelName} {msg}",
-    // }),
-  },
-
-  loggers: {
-    default: {
-      level: "DEBUG",
-      handlers: ["console"],
-      // handlers: ["console", "file"],
-    },
-
-    tasks: {
-      level: "ERROR",
-      handlers: ["console"],
-    },
-  },
-});
 
 export default class Application {
   private static _instance: Application;
@@ -56,7 +33,7 @@ export default class Application {
 
   async serve(): Promise<any> {
     if (!this.server || !this.config) {
-      throw new Error("There was an error with Application configuration");
+      throw new Error("There was an error with configuration");
     }
 
     log.info(`🥩 running on ${this.config.apiHost}:${this.config.apiPort}`);

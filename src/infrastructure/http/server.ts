@@ -10,21 +10,31 @@ export default class Server extends ServerContract {
 
   protected build(): void {
     this.app = new Application();
+    this.app.use(this.schema);
+    this.app.use(this.time);
+    this.app.use(this.log);
+    this.app.use(this.router.get().routes());
+    this.app.use(this.router.get().allowedMethods());
+  }
 
-    // LogMiddleware
-    this.app.use(async (
+  private get schema(): (
+    ctx: Context,
+    next: () => Promise<void>,
+  ) => Promise<void> {
+    return async (
       ctx: Context,
       next: () => Promise<void>,
     ): Promise<void> => {
+      ctx.state.schema = this.config.schema;
       await next();
-      const time = ctx.response.headers.get("X-Response-Time");
-      log.info(
-        `${ctx.request.method} ${ctx.request.url}: ${ctx.response.status} ${time}`,
-      );
-    });
+    };
+  }
 
-    // TimeMiddleware
-    this.app.use(async (
+  private get time(): (
+    ctx: Context,
+    next: () => Promise<void>,
+  ) => Promise<void> {
+    return async (
       ctx: Context,
       next: () => Promise<void>,
     ): Promise<void> => {
@@ -32,14 +42,37 @@ export default class Server extends ServerContract {
       await next();
       const delta = Date.now() - start;
       ctx.response.headers.set("X-Response-Time", `${delta}ms`);
-    });
-
-    this.app.addEventListener("error", (event) => log.error(event.error));
-    this.app.use(this.router.get().routes());
-    this.app.use(this.router.get().allowedMethods());
+    };
   }
 
-  get router(): Router {
+  private get log(): (
+    ctx: Context,
+    next: () => Promise<void>,
+  ) => Promise<void> {
+    return async (
+      ctx: Context,
+      next: () => Promise<void>,
+    ): Promise<void> => {
+      await next();
+      const url = ctx.request.url;
+      const method = ctx.request.method;
+      const status = ctx.response.status;
+      const time = ctx.response.headers.get("X-Response-Time");
+      if (status > 100 && status < 400) {
+        log.info(`${method} ${url}: ${status} ${time}`);
+      } else if (status < 500) {
+        log.warning(`${method} ${url}: ${status} ${time}`);
+      } else {
+        const { errors } = Object.assign(
+          { errors: [{ message: "" }] },
+          ctx.response.body,
+        );
+        log.error(`${method} ${url}: ${status} ${errors[0].message} ${time}`);
+      }
+    };
+  }
+
+  private get router(): Router {
     if (this._router) {
       return this._router;
     }
@@ -57,7 +90,7 @@ export default class Server extends ServerContract {
         break;
 
       default:
-        throw new Error("Invalid api interface was given");
+        throw new Error("Invalid api interface given");
     }
 
     return this.router;

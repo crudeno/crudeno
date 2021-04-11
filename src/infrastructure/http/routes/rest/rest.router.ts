@@ -5,6 +5,7 @@ import readController from "./controllers/read.controller.ts";
 import updateController from "./controllers/update.controller.ts";
 import deleteController from "./controllers/delete.controller.ts";
 import createValidator from "./validators/create.validator.ts";
+import handler from "./exceptions/handler.ts";
 
 export default class RestRouter extends Router {
   private readonly entityName: string | undefined;
@@ -21,11 +22,11 @@ export default class RestRouter extends Router {
 
   protected build(): void {
     this.router
-      .post(this.path, createValidator, createController)
-      .get(this.path, readController)
-      .get(`${this.path}/:id`, readController)
-      .put(`${this.path}/:id`, updateController)
-      .patch(`${this.path}/:id`, updateController)
-      .delete(`${this.path}/:id`, deleteController);
+      .post(this.path, handler, createValidator, createController)
+      .get(this.path, handler, readController)
+      .get(`${this.path}/:id`, handler, readController)
+      .put(`${this.path}/:id`, handler, updateController)
+      .patch(`${this.path}/:id`, handler, updateController)
+      .delete(`${this.path}/:id`, handler, deleteController);
   }
 }

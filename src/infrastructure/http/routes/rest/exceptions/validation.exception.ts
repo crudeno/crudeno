@@ -1,8 +1,5 @@
-export default class ValidationException extends Error {
-  errors: any[];
+import Bag from "./bag.ts";
 
-  constructor(errors: any[]) {
-    super();
-    this.errors = errors;
-  }
+export default class ValidationException extends Bag {
+  status = 400;
 }
