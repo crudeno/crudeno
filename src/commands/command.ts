@@ -1,2 +1,2 @@
-export default abstract class Command {
+export default interface Command {
 }
