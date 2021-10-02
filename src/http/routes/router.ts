@@ -1,12 +1,12 @@
 import { Context, Router as OakRouter } from '../../../deps.ts'
-import Config from '../../config.ts'
+import { Config } from '../server.ts'
 
 export default abstract class Router {
   protected router: OakRouter
 
-  constructor(protected config: Pick<Config, 'ENTITY' | 'API_PATH'>) {
+  constructor({ path }: Pick<Config, 'path'>) {
     this.router = new OakRouter()
-    this.build(this.clean(this.path(config)))
+    this.build(this.clean(this.path({ path })))
     this.afterBuild()
   }
 
@@ -27,7 +27,7 @@ export default abstract class Router {
     })
   }
 
-  protected abstract path(config: Pick<Config, 'ENTITY' | 'API_PATH'>): string;
+  protected abstract path({ path }: Pick<Config, 'path'>): string;
 
   protected abstract build(path: string): void
 

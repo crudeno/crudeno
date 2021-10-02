@@ -1,16 +1,16 @@
-import Config from '../../config.ts'
+import { Config } from '../server.ts'
 import GraphqlRouter from './graphql.router.ts'
 import RestRouter from './rest.router.ts'
 import Router from './router.ts'
 
 export default class RouterFactory {
-  static make(config: Pick<Config, 'API_TYPE' | 'API_PATH' | 'ENTITY'>): Router {
-    switch (config.API_TYPE) {
+  static make({ path, type }: Pick<Config, 'path' | 'type'>): Router {
+    switch (type) {
       case 'graphql':
-        return new GraphqlRouter(config)
+        return new GraphqlRouter({ path })
       case 'rest':
       default:
-        return new RestRouter(config)
+        return new RestRouter({ path })
     }
   }
 }

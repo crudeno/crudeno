@@ -1,4 +1,4 @@
-import Config from '../../config.ts'
+import { Config } from '../database.ts'
 import Connection from './connection.ts'
 import { MongodbConnection } from './mongodb.connection.ts'
 import { MysqlConnection } from './mysql.connection.ts'
@@ -6,15 +6,8 @@ import { PostgresqlConnection } from './postgresql.connection.ts'
 import { SqliteConnection } from './sqlite.connection.ts'
 
 export default class ConnectionFactory {
-  static make(config: Pick<Config,
-    'DATABASE_TYPE' |
-    'DATABASE_HOST' |
-    'DATABASE_NAME' |
-    'DATABASE_PATH' |
-    'DATABASE_PORT' |
-    'DATABASE_PASS' |
-    'DATABASE_USER'>): Connection {
-    switch (config.DATABASE_TYPE) {
+  static make(config: Config): Connection {
+    switch (config.type) {
       case 'mongodb':
         return new MongodbConnection(config)
       case 'mysql':

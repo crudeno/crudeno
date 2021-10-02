@@ -1,5 +1,5 @@
-import Application from './src/application.ts'
+import Crudeno from './src/crudeno.ts'
 import Config from './src/config.ts'
 
-export { Application }
+export { Crudeno }
 export type { Config }

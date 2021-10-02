@@ -1,3 +1,5 @@
 export default interface ServerContract {
-  serve(host: string, port: number): void;
+  host: string,
+  port: number,
+  serve(): void;
 }
