@@ -1,5 +1,5 @@
-import { Database as Connection } from '../../deps.ts'
-
-export default interface DatabaseContract {
-  connect(): Connection;
+type DatabaseContract = {
+  connect(): unknown;
 }
+
+export default DatabaseContract
